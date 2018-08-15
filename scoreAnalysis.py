@@ -280,6 +280,7 @@ for row in range(row+1,nrowsPage2):
         break
 document.save('.\\data\\scoreAnalysisResult.docx')
 print "请手动保存显示的成绩分析图！！！"
+
 plt.show()
 
 
