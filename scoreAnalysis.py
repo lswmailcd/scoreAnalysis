@@ -149,12 +149,15 @@ for row in range(nrows):
             k+=1
     for k in range(k+2,ncells):
         if (tableWord.rows[row].cells[k].text == u"参考人数" and tableWord.rows[row].cells[k+1].text == u""):
+          #  print len(tableWord.rows[row].cells[k+1].text)
             tableWord.rows[row].cells[k+1].text = '%r' % nStuTakExam + u"人"
             break
         else:
             k+=1
+
     for k in range(k+2, ncells):
-        if (tableWord.rows[row].cells[k].text == u"缓考人数" and tableWord.rows[row].cells[k+1].text == u""):
+       # print len(tableWord.rows[row].cells[k + 1].text)
+        if (tableWord.rows[row].cells[k].text == u"缓考人数" and tableWord.rows[row].cells[k+1].text==u""):
             tableWord.rows[row].cells[k+1].text = '%r' % nDelayExamStu + u"人"
             rowFinish  = 1
             break
@@ -239,7 +242,7 @@ rowFinish=0
 row = 11
 ncells = len(tableWord.rows[row].cells)
 nextK = 0
-for n in range(clsNum):
+for n in range(0, clsNum):
     for k in range(nextK, ncells):
         if (tableWord.rows[row].cells[k].text == str(n).decode('utf8')):# and tableWord.rows[row].cells[k+1].text == u""):
             tableWord.rows[row+1].cells[k].text = '%r' % round(scoreAvgPerClass[n],2)
