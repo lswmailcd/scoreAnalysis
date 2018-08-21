@@ -7,12 +7,13 @@ from pylab import mpl
 from docx import Document
 #======================================================================================
 #需要根据具体分析报告修改的数据
-excelSourceDataFileName = u'.\\data\\2015级医学影像学专业本科”计算机原理与接口”成绩.xls'
-stuNum = 293
-scoreColumnIdx = 8
-classNameColumnIdx = 4
+excelSourceDataFileName = u'.\\data\\scoreTemplate.xls'
+stuNum = 113
+scoreColumnIdx = 3
+classNameColumnIdx = 2
 startRowIdx = 2
-wordGraph_Title=u"2015级影像本科“计算机原理与接口”成绩直方图"
+wordGraph_Title=u"2017级眼视光、预防医学专业本科十五合班“计算机应用基础”成绩直方图"
+yAxiScaleStep = 5 #每5分一个Y刻度
 #======================================================================================
 wordTemplateFileName = u'.\\data\\scoreAnalysisTemplate.docx'
 wordGraph_XLable = u'成绩段'
@@ -20,8 +21,8 @@ wordGraph_YLable = u'学生人数'
 scorePhasePlot = [30,35,40,45,50,55,60,65,70,75,80,85,90,95,100]
 xtickLable = ['<30', '<35', '<40', '<45', '<50', '<55', '<60',
               '<65', '<70', '<75', '<80', '<85', '<90', '<95','<=100']
-scorePhaseString = [u'30分以下', u'30-', u'35-', u'40-', u'45-', u'50-',u'55-',
-                    u'60-',u'65-', u'70-', u'75-', u'80-', u'85-', u'90-', u'95-']
+scorePhaseString = [u'30以下', u'30~34', u'35~39', u'40~44', u'45~49', u'50~54',u'55~59',
+                    u'60~64',u'65~69', u'70~74', u'75~79', u'80~84', u'85~89', u'90~94', u'95~100']
 wordGraph_FontSize = 25
 #====================================================================================
 data = xlrd.open_workbook(excelSourceDataFileName)
@@ -109,12 +110,13 @@ fig, ax = plt.subplots()
 mpl.rcParams['font.sans-serif'] = ['SimHei']  # 指定默认字体
 mpl.rcParams['axes.unicode_minus'] = False  # 解决保存图像是负号'-'显示为方块的问题
 fs = wordGraph_FontSize
-nMaxStu = np.max(nStuCountPerScorePhase)
-ylim = 10*(int(nMaxStu/10)+2)
-ax.set_ylim(0,ylim)
-yticklabel = np.zeros(ylim/10+2)
-for i in range(ylim/10+2):
-    yticklabel[i] = i*10
+nMaxStuCountPerScorePhase = np.max(nStuCountPerScorePhase)
+nMaxYAxisValue = 10*(int(nMaxStuCountPerScorePhase/10)+1)
+graphScaleCountY = nMaxYAxisValue/yAxiScaleStep
+ax.set_ylim(0,nMaxYAxisValue)
+yticklabel = np.zeros(graphScaleCountY)
+for i in range(graphScaleCountY):
+    yticklabel[i] = i*yAxiScaleStep
 ax.set_ylabel(wordGraph_YLable, fontsize=fs)
 ax.set_xlabel(wordGraph_XLable, fontsize=fs)
 ax.set_title(wordGraph_Title, fontsize=fs)
@@ -151,24 +153,24 @@ for row in range(nrows):
         if (tableWord.rows[row].cells[k].text == u"参考人数" and tableWord.rows[row].cells[k+1].text == u""):
           #  print len(tableWord.rows[row].cells[k+1].text)
             tableWord.rows[row].cells[k+1].text = '%r' % nStuTakExam + u"人"
+            rowFinish = 1
             break
         else:
             k+=1
 
-    for k in range(k+2, ncells):
-       # print len(tableWord.rows[row].cells[k + 1].text)
-        if (tableWord.rows[row].cells[k].text == u"缓考人数" and tableWord.rows[row].cells[k+1].text==u""):
-            tableWord.rows[row].cells[k+1].text = '%r' % nDelayExamStu + u"人"
-            rowFinish  = 1
-            break
-        else:
-            k+=1
     if rowFinish == 1:
         break
 rowFinish = 0
 nextRow = row + 1
 for row in range(nextRow, nrows):
     ncells = len(tableWord.rows[row].cells)
+    for k in range(k+2, ncells):
+       # print len(tableWord.rows[row].cells[k + 1].text)
+        if (tableWord.rows[row].cells[k].text == u"缓考人数" and tableWord.rows[row].cells[k+1].text==u""):
+            tableWord.rows[row].cells[k+1].text = '%r' % nDelayExamStu + u"人"
+            break
+        else:
+            k+=1
     for k in range(ncells):
         if (tableWord.rows[row].cells[k].text == u"旷考人数" and tableWord.rows[row].cells[k+1].text == u""):
             tableWord.rows[row].cells[k+1].text = '%r' % nNotAttendExamStu + u"人"
@@ -178,13 +180,7 @@ for row in range(nextRow, nrows):
     for k in range(k+2, ncells):
         if (tableWord.rows[row].cells[k].text == u"违纪人数" and tableWord.rows[row].cells[k+1].text == u""):
             tableWord.rows[row].cells[k+1].text = '%r' % nViolationExamStu + u"人"
-            break
-        else:
-            k+=1
-    for k in range(k+2, ncells):
-        if (tableWord.rows[row].cells[k].text == u"作弊人数" and tableWord.rows[row].cells[k+1].text == u""):
-            tableWord.rows[row].cells[k+1].text = '%r' % nCheatExamStu + u"人"
-            rowFinish  = 1
+            rowFinish = 1
             break
         else:
             k+=1
@@ -259,11 +255,11 @@ nrowsPage2 = len(tableWordPage2.rows)
 rowFinish = 0
 for row in range(nrowsPage2):
     if (u"试卷整体合理性" in tableWordPage2.rows[row].cells[0].text):
-        tableWordPage2.rows[row].cells[0].text = u"4. 总评平均难度及评价：难度系数为"+str(scoreDiffcult)
+        tableWordPage2.rows[row].cells[0].text = u"2. 试卷难度：难度系数为"+str(scoreDiffcult)
         tableWordPage2.rows[row].cells[0].text += u"，合班平均分为"
         tableWordPage2.rows[row].cells[0].text += str(scoreAvg)
         tableWordPage2.rows[row].cells[0].text += u","
-        tableWordPage2.rows[row].cells[0].text += u"试卷难度("
+        tableWordPage2.rows[row].cells[0].text += u"试卷难度"
         strDiffGrad = u""
         if(scoreDiffcult<0.7):
             strDiffGrad = u"较难"
@@ -272,13 +268,15 @@ for row in range(nrowsPage2):
         else:
             strDiffGrad = u"较易"
         tableWordPage2.rows[row].cells[0].text += strDiffGrad
-        tableWordPage2.rows[row].cells[0].text += u")"
-        break
-for row in range(row+1,nrowsPage2):
-    if (u"不及格学生的试卷分析" in tableWordPage2.rows[row].cells[0].text):
-        tableWordPage2.rows[row].cells[0].text = u"不及格学生的试卷分析:\r"
-        tableWordPage2.rows[row].cells[0].text += u"1．不及格（低于60分）学生人数" + str(nStuCountBelow60)
-        tableWordPage2.rows[row].cells[0].text += u"人,比例" + str(round(nStuCountBelow60*100.0/nStuTakExam,2))
+        tableWordPage2.rows[row].cells[0].text += u"\n"
+
+        #if (u"不及格学生的试卷分析" in tableWordPage2.rows[row].cells[0].text):
+        tableWordPage2.rows[row].cells[0].text += u"4. 成绩直方图分析:\n"
+        tableWordPage2.rows[row].cells[0].text += u"成绩直方图趋于正态分布，60分以下" + str(nStuCountBelow60)
+        tableWordPage2.rows[row].cells[0].text += u"人,约占本合班参考人数的" + str(round(nStuCountBelow60*100.0/nStuTakExam,2))
+        tableWordPage2.rows[row].cells[0].text += u"%,"
+        tableWordPage2.rows[row].cells[0].text += u"90分以上" + str(nStuCountAE90)
+        tableWordPage2.rows[row].cells[0].text += u"人,约占本合班参考人数的" + str(round(nStuCountAE90*100.0/nStuTakExam,2))
         tableWordPage2.rows[row].cells[0].text += u"%"
         break
 document.save('.\\data\\scoreAnalysisResult.docx')
