@@ -5,14 +5,17 @@ import xlrd
 import matplotlib.pyplot as plt
 from pylab import mpl
 from docx import Document
+import sys
+sys.path.append('../stockAnalysis')
+import Graph as gp
 #======================================================================================
 #需要根据具体分析报告修改的数据
-excelSourceDataFileName = u'.\\data\\scoreTemplate.xls'
-stuNum = 113
-scoreColumnIdx = 3
+excelSourceDataFileName = u'.\\data\\2018级中西医12合班VB成绩.xls' #scoreTemplate.xls'
+stuNum = 209
+scoreColumnIdx = 5
 classNameColumnIdx = 2
 startRowIdx = 2
-wordGraph_Title=u"2017级眼视光、预防医学专业本科十五合班“计算机应用基础”成绩直方图"
+wordGraph_Title=u"2018级中西医“计算机应用基础”成绩直方图"
 yAxiScaleStep = 5 #每5分一个Y刻度
 #======================================================================================
 wordTemplateFileName = u'.\\data\\scoreAnalysisTemplate.docx'
@@ -107,35 +110,8 @@ print scorePhase
 print nStuCountPerScorePhase
 
 fig, ax = plt.subplots()
-mpl.rcParams['font.sans-serif'] = ['SimHei']  # 指定默认字体
-mpl.rcParams['axes.unicode_minus'] = False  # 解决保存图像是负号'-'显示为方块的问题
-fs = wordGraph_FontSize
-nMaxStuCountPerScorePhase = np.max(nStuCountPerScorePhase)
-nMaxYAxisValue = 10*(int(nMaxStuCountPerScorePhase/10)+1)
-graphScaleCountY = nMaxYAxisValue/yAxiScaleStep
-ax.set_ylim(0,nMaxYAxisValue)
-yticklabel = np.zeros(graphScaleCountY)
-for i in range(graphScaleCountY):
-    yticklabel[i] = i*yAxiScaleStep
-ax.set_ylabel(wordGraph_YLable, fontsize=fs)
-ax.set_xlabel(wordGraph_XLable, fontsize=fs)
-ax.set_title(wordGraph_Title, fontsize=fs)
-rects1 = ax.bar(scorePhasePlot, nStuCountPerScorePhase, 3, color='b')
-ax.set_xticks(scorePhasePlot)
-ax.set_xticklabels(xtickLable, fontsize=fs)
-ax.set_yticklabels(yticklabel, fontsize=fs)
-
-def autolabel(rects):
-    """
-    Attach a text label above each bar displaying its height
-    """
-    for rect in rects:
-        height = rect.get_height()
-        ax.text(rect.get_x() + rect.get_width()/2., 1.01*height,
-                '%d' % int(height),
-                ha='center', va='bottom', fontsize=fs)
-autolabel(rects1)
-
+fs = 18
+gp.drawColumnChat( ax, scorePhasePlot, nStuCountPerScorePhase, scorePhasePlot, nStuCountPerScorePhase, wordGraph_Title, wordGraph_XLable, wordGraph_YLable, fs, 3)
 
 document = Document(wordTemplateFileName)
 tableWord = document.tables[0]
