@@ -110,8 +110,8 @@ print scorePhase
 print nStuCountPerScorePhase
 
 fig, ax = plt.subplots()
-fs = 18
-gp.drawColumnChat( ax, scorePhasePlot, nStuCountPerScorePhase, scorePhasePlot, nStuCountPerScorePhase, wordGraph_Title, wordGraph_XLable, wordGraph_YLable, fs, 3)
+fs = 28
+gp.drawColumnChat( ax, scorePhasePlot, nStuCountPerScorePhase, xtickLable, nStuCountPerScorePhase, wordGraph_Title, wordGraph_XLable, wordGraph_YLable, fs, 3)
 
 document = Document(wordTemplateFileName)
 tableWord = document.tables[0]
