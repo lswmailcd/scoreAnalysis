@@ -10,15 +10,17 @@ sys.path.append('../stockAnalysis')
 import Graph as gp
 #======================================================================================
 #需要根据具体分析报告修改的数据
-excelSourceDataFileName = u'.\\data\\2018级中西医12合班VB成绩.xls' #scoreTemplate.xls'
-stuNum = 209
-scoreColumnIdx = 5
+#scoreAnalysisTemplate中各小班编号从0开始，依次为0|1|2|3|4|...，不能出现中文字
+excelSourceDataFileName = u'.\\data\\2019级眼视光医学10合班医用高等数学成绩.xls' #scoreTemplate.xls'
+stuNum = 92
+#以下数据起始标号为0
+scoreColumnIdx = 3
 classNameColumnIdx = 2
-startRowIdx = 2
-wordGraph_Title=u"2018级中西医“计算机应用基础”成绩直方图"
+startRowIdx = 0
+wordGraph_Title=u"2019级眼视光医学10合班“医用高等数学”成绩直方图"
 yAxiScaleStep = 5 #每5分一个Y刻度
 #======================================================================================
-wordTemplateFileName = u'.\\data\\scoreAnalysisTemplate.docx'
+wordTemplateFileName = u'.\\data\\scoreAnalysisTemplate_math.docx'
 wordGraph_XLable = u'成绩段'
 wordGraph_YLable = u'学生人数'
 scorePhasePlot = [30,35,40,45,50,55,60,65,70,75,80,85,90,95,100]
@@ -232,10 +234,11 @@ nrowsPage2 = len(tableWordPage2.rows)
 rowFinish = 0
 for row in range(nrowsPage2):
     if (u"试卷整体合理性" in tableWordPage2.rows[row].cells[0].text):
-        tableWordPage2.rows[row].cells[0].text = u"2. 试卷难度：难度系数为"+str(scoreDiffcult)
+        tableWordPage2.rows[row].cells[0].text += u"\n"
+        tableWordPage2.rows[row].cells[0].text += u"2. 试卷难度：难度系数为"+str(scoreDiffcult)
         tableWordPage2.rows[row].cells[0].text += u"，合班平均分为"
         tableWordPage2.rows[row].cells[0].text += str(scoreAvg)
-        tableWordPage2.rows[row].cells[0].text += u","
+        tableWordPage2.rows[row].cells[0].text += u"，"
         tableWordPage2.rows[row].cells[0].text += u"试卷难度"
         strDiffGrad = u""
         if(scoreDiffcult<0.7):
@@ -245,16 +248,16 @@ for row in range(nrowsPage2):
         else:
             strDiffGrad = u"较易"
         tableWordPage2.rows[row].cells[0].text += strDiffGrad
-        tableWordPage2.rows[row].cells[0].text += u"\n"
+        tableWordPage2.rows[row].cells[0].text += u"。\n"
 
         #if (u"不及格学生的试卷分析" in tableWordPage2.rows[row].cells[0].text):
         tableWordPage2.rows[row].cells[0].text += u"4. 成绩直方图分析:\n"
         tableWordPage2.rows[row].cells[0].text += u"成绩直方图趋于正态分布，60分以下" + str(nStuCountBelow60)
-        tableWordPage2.rows[row].cells[0].text += u"人,约占本合班参考人数的" + str(round(nStuCountBelow60*100.0/nStuTakExam,2))
-        tableWordPage2.rows[row].cells[0].text += u"%,"
+        tableWordPage2.rows[row].cells[0].text += u"人，约占本合班参考人数的" + str(round(nStuCountBelow60*100.0/nStuTakExam,2))
+        tableWordPage2.rows[row].cells[0].text += u"%，"
         tableWordPage2.rows[row].cells[0].text += u"90分以上" + str(nStuCountAE90)
-        tableWordPage2.rows[row].cells[0].text += u"人,约占本合班参考人数的" + str(round(nStuCountAE90*100.0/nStuTakExam,2))
-        tableWordPage2.rows[row].cells[0].text += u"%"
+        tableWordPage2.rows[row].cells[0].text += u"人，约占本合班参考人数的" + str(round(nStuCountAE90*100.0/nStuTakExam,2))
+        tableWordPage2.rows[row].cells[0].text += u"%。"
         break
 document.save('.\\data\\scoreAnalysisResult.docx')
 print "请手动保存显示的成绩分析图！！！"
